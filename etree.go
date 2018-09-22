@@ -57,6 +57,9 @@ type WriteSettings struct {
 	// attribute value characters &, < and ". If false, XML character
 	// references are also produced for > and '. Default: false.
 	CanonicalAttrVal bool
+
+	// WhitespaceEndTags forces tags to have whitespace before the />.
+	WhitespaceEndTags bool
 }
 
 // newWriteSettings creates a default WriteSettings record.
@@ -737,6 +740,9 @@ func (e *Element) writeTo(w *bufio.Writer, s *WriteSettings) {
 			w.WriteString(e.Tag)
 			w.WriteByte('>')
 		} else {
+			if s.WhitespaceEndTags {
+				w.WriteRune(' ')
+			}
 			w.Write([]byte{'/', '>'})
 		}
 	}

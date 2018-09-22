@@ -209,6 +209,36 @@ func TestWriteSettings(t *testing.T) {
 	checkEq(t, s, expected)
 }
 
+func TestWriteSettings_WhitespaceEndTags(t *testing.T) {
+	BOM := "\xef\xbb\xbf"
+
+	doc := NewDocument()
+	doc.WriteSettings.CanonicalEndTags = false
+	doc.WriteSettings.CanonicalAttrVal = true
+	doc.WriteSettings.WhitespaceEndTags = true
+	doc.CreateCharData(BOM)
+	doc.CreateProcInst("xml-stylesheet", `type="text/xsl" href="style.xsl"`)
+
+	people := doc.CreateElement("People")
+	people.CreateComment("These are all known people")
+
+	people.CreateElement("Person")
+
+	doc.Indent(2)
+	s, err := doc.WriteToString()
+	if err != nil {
+		t.Error("etree: WriteSettings WriteTo produced incorrect result.")
+	}
+
+	expected := BOM + `<?xml-stylesheet type="text/xsl" href="style.xsl"?>
+<People>
+  <!--These are all known people-->
+  <Person />
+</People>
+`
+	checkEq(t, s, expected)
+}
+
 func TestCopy(t *testing.T) {
 	s := `<store>
 	<book lang="en">
