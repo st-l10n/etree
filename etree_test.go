@@ -10,6 +10,7 @@ import (
 )
 
 func checkEq(t *testing.T, got, want string) {
+	t.Helper()
 	if got != want {
 		t.Errorf("etree: unexpected result.\nGot:\n%s\nWanted:\n%s\n", got, want)
 	}
